@@ -1,2 +1,2 @@
-# umyo--om-tools
-umyo-om-tools
+# uMyo_python_tools
+Python stuff for working with uMyo via USB base station
