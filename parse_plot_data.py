@@ -20,29 +20,14 @@ def plot_prepare():
     print(plot_ys[0])
     return devices[0].data_id
 
-def select_port(port):
-    devices = []
-    port_selected = False
-    for i,p in enumerate(port):
-        print(i,p.device)
-        #device = p.device
-        devices.append(p.device)
-    while not port_selected:
-        selected_port = input('Please Enter Port Number')
-        try:
-            device = devices[int(selected_port)]
-            port_selected = True
-        except:
-            print(f'Error please enter an integer within range of 0 - {len(devices)}')
-    print("===")
-    print(f'{device} selected')
-    return(device)
-
 # list
 from serial.tools import list_ports
 port = list(list_ports.comports())
 print("available ports:")
-device = select_port(port)
+for p in port:
+    print(p.device)
+    device = p.device
+print("===")
 
 #read
 import serial
