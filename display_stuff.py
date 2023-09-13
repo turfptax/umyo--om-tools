@@ -1,6 +1,6 @@
 #drawing via pygame
 
-import sys, pygame
+import sys, pygame, os
 from math import *
 import datetime
 pygame.init()
@@ -325,8 +325,9 @@ def plot_prepare(devices):
     # Begin ML data storage
     global file
     time_now = datetime.datetime.now()
-    data_packet = []
-    data_packet.append(time_now)
+    data_packets = []
+    data_packet = {}
+    data_packet['datetime']=time_now
     # End ML data storage
     global plot_emg, plot_spg, max_devices, last_data_id, y_zero, active_devices
     for i in range(max_devices): not_updated_cnt[i] += 1
@@ -335,12 +336,14 @@ def plot_prepare(devices):
     for d in range(cnt):
         if(devices[d].data_id != last_data_id[d]):
             not_updated_cnt[d] = 0
+            temp_emg = []
             # Data Storage
             for n in range(4):
                 plot_spg[d].append(devices[d].device_spectr[n])
             for x in range(devices[d].data_count):
                 val = devices[d].data_array[x]
                 plot_emg[d].append(val)
+                temp_emg.append(val)
                 y_zero[d] = 0.997*y_zero[d] + 0.003*val
             
             plot_ax[d].append(devices[d].ax)
@@ -350,15 +353,21 @@ def plot_prepare(devices):
             plot_Q[d].append(devices[d].Qsg[1])
             plot_Q[d].append(devices[d].Qsg[2])
             plot_Q[d].append(devices[d].Qsg[3])
-            data_packet.append(d)
-            data_packet.append(devices[d].ax)
-            data_packet.append(devices[d].ay)
-            data_packet.append(devices[d].az)
-            data_packet.append(devices[d].Qsg[0])
-            data_packet.append(devices[d].Qsg[1])
-            data_packet.append(devices[d].Qsg[2])
-            data_packet.append(devices[d].Qsg[3])
-            
+            xyz = []
+            temp_qsg = []
+            temp_data = []
+            data_packet['id']=d
+            xyz.append(devices[d].ax)
+            xyz.append(devices[d].ay)
+            xyz.append(devices[d].az)
+            temp_qsg.append(devices[d].Qsg[0])
+            temp_qsg.append(devices[d].Qsg[1])
+            temp_qsg.append(devices[d].Qsg[2])
+            temp_qsg.append(devices[d].Qsg[3])
+            data_packet['qsg'] = temp_qsg
+            data_packet['xyz'] = xyz
+            data_packet['emg'] = temp_emg
+            data_packets.append(data_packet)
             
         last_data_id[d] = devices[d].data_id
         if(hasattr(devices[d], 'rssi')):
@@ -375,6 +384,6 @@ def plot_prepare(devices):
         plot_az[d] = plot_az[d][-spg_len:]
         plot_Q[d] = plot_Q[d][-spg_len*4:]
     #print(plot_emg[0])
-    file.write(str(data_packet) + '\n')
+    file.write(str(data_packets) + '\n')
     return devices[0].data_id
 

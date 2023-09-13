@@ -6,11 +6,12 @@ import sys
 import os
 import time
 import ast
+import datetime
 
 lpps = 0
 bpps = 0
 
-last_lask_packet = {'id': 'OM-LASK4', 'time': (2023, 1, 8, 22, 37, 28, 6, 8), 'data': [3, 1, 4, 5], 'ticks': 53249, 'rec_time': 0.0001
+last_lask_packet = {'id': 'OM-LASK4', 'time': (2023, 1, 8, 22, 37, 28, 6, 8), 'data': [3, 1, 4, 5], 'ticks': 53249, 'rec_time': 0.0001}
 
 max_samp = 6500
 min_samp = 4000
@@ -115,21 +116,6 @@ def draw_lask(packet):
             position += 1
         last_lask_packet = packet
     
-    
-
-def draw_band(packet):
-    global count
-    global bpps
-    global last_band_packet
-    position = 6
-    if packet['rec_time']-last_band_packet['rec_time']>.01:
-        bpps = packet['rec_time']-last_band_packet['rec_time']
-        bpps = int(bpps*100)/100
-        for i,y in enumerate(last_band_packet['data']):
-            draw_signal(count-2,y,count,packet['data'][i],position,(200,200,255))
-            position += 1
-        last_band_packet = packet
-
 def text_gui(screen=screen):
     global lpps
     global bpps
@@ -176,9 +162,9 @@ while not done:
     pack = get_packet(s)
     if pack:
         pack['rec_time'] = time.time()-t0
+        pack['date_time'] = datetime.datetime.now()
         file.write(str(pack) + '\n')
-        # Draw Screen
-        #
+        print('printed')
         if 'OM-LASK' in pack['id']:
             draw_lask(pack)
             device = 'OpenMuscle LASK4'
@@ -187,9 +173,6 @@ while not done:
     if count > 750:
         screen.fill(0)
         count = 0
-    if not count % 100:
-        draw_text(last_lask_packet,last_band_packet)
-        text_gui()
     # End Draw Screen    
 file.close()
 
