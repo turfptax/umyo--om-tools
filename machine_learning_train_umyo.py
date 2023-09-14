@@ -52,3 +52,15 @@ y_pred = model.predict(X_test)
 evaluate_model(y_test, y_pred)
 
 
+# Create a new DataFrame with the actual and predicted labels
+result_df = y_test.copy().reset_index(drop=True)
+result_df.columns = ['Actual LASK1', 'Actual LASK2', 'Actual LASK3', 'Actual LASK4', 'LASK_time']
+result_df['Predicted LASK1'] = y_pred[:, 0]
+result_df['Predicted LASK2'] = y_pred[:, 1]
+result_df['Predicted LASK3'] = y_pred[:, 2]
+result_df['Predicted LASK4'] = y_pred[:, 3]
+
+# Save the DataFrame as a CSV file
+
+result_df.to_csv('predictions_vs_actuals.csv', index=False)
+
